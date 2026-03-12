@@ -1,14 +1,15 @@
 using System;
-using System.ComponentModel;
-using System.Linq;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace baithuchanh2
 {
     public partial class frm_qlsv : Form
     {
-        private readonly BindingList<Student> _students = new BindingList<Student>();
-        private readonly BindingSource _source = new BindingSource();
+        private readonly string _connString = ConfigurationManager.ConnectionStrings["QLSV"].ConnectionString;
+        private DataTable _table = new DataTable();
 
         public frm_qlsv()
         {
@@ -17,91 +18,58 @@ namespace baithuchanh2
 
         private void frm_qlsv_Load(object sender, EventArgs e)
         {
-            _source.DataSource = _students;
-            dgvSinhVien.AutoGenerateColumns = false;
-            dgvSinhVien.DataSource = _source;
+            LoadData();
+            // vô hiệu hóa các chức năng sửa/ghi
+            btnThem.Enabled = btnCapNhat.Enabled = btnSua.Enabled = btnXoa.Enabled = false;
+        }
 
-            cboGioiTinh.Items.AddRange(new[] { "Nam", "Nữ", "Khác" });
-            if (cboGioiTinh.Items.Count > 0)
-                cboGioiTinh.SelectedIndex = 0;
+        private void LoadData(string keyword = "")
+        {
+            using (var conn = new SqlConnection(_connString))
+            using (var cmd = new SqlCommand())
+            {
+                cmd.Connection = conn;
+                cmd.CommandText = @"SELECT MaSV, HoTen, NgaySinh, GioiTinh, MaLop FROM SinhVien
+                                     WHERE (@kw = '' OR MaSV LIKE @kwLike OR HoTen LIKE @kwLike OR MaLop LIKE @kwLike)";
+                cmd.Parameters.AddWithValue("@kw", keyword);
+                cmd.Parameters.AddWithValue("@kwLike", "%" + keyword + "%");
+                var da = new SqlDataAdapter(cmd);
+                _table = new DataTable();
+                da.Fill(_table);
+                dgvSinhVien.AutoGenerateColumns = false;
+                dgvSinhVien.DataSource = _table;
+            }
+        }
 
-            dtNgaySinh.Value = DateTime.Today;
+        private void LoadLopToCombo()
+        {
+            using (var conn = new SqlConnection(_connString))
+            using (var da = new SqlDataAdapter("SELECT MaLop FROM Lop", conn))
+            {
+                var dt = new DataTable();
+                da.Fill(dt);
+                cboGioiTinh.Items.Clear(); // giữ nguyên cho giới tính, combo lớp chưa có; không dùng.
+            }
         }
 
         private void BtnThem_Click(object sender, EventArgs e)
         {
-            if (!ValidateInputs(out string message))
-            {
-                MessageBox.Show(message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (_students.Any(s => s.MaSV.Equals(txtMaSV.Text.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                MessageBox.Show("Mã sinh viên đã tồn tại.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            _students.Add(new Student
-            {
-                MaSV = txtMaSV.Text.Trim(),
-                HoTen = txtHoTen.Text.Trim(),
-                NgaySinh = dtNgaySinh.Value.Date,
-                GioiTinh = cboGioiTinh.Text,
-                Lop = txtLop.Text.Trim()
-            });
-
-            ClearForm();
+            MessageBox.Show("Chức năng thêm đã tắt (chỉ xem và tìm kiếm).", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void BtnCapNhat_Click(object sender, EventArgs e)
         {
-            if (dgvSinhVien.CurrentRow == null)
-            {
-                MessageBox.Show("Chọn một sinh viên để cập nhật.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (!ValidateInputs(out string message))
-            {
-                MessageBox.Show(message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (dgvSinhVien.CurrentRow.DataBoundItem is Student student)
-            {
-                student.MaSV = txtMaSV.Text.Trim();
-                student.HoTen = txtHoTen.Text.Trim();
-                student.NgaySinh = dtNgaySinh.Value.Date;
-                student.GioiTinh = cboGioiTinh.Text;
-                student.Lop = txtLop.Text.Trim();
-                dgvSinhVien.Refresh();
-                ClearForm();
-            }
+            MessageBox.Show("Chức năng cập nhật đã tắt (chỉ xem và tìm kiếm).", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void BtnSua_Click(object sender, EventArgs e)
         {
-            LoadSelectedToForm();
+            MessageBox.Show("Chức năng sửa đã tắt (chỉ xem và tìm kiếm).", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void BtnXoa_Click(object sender, EventArgs e)
         {
-            if (dgvSinhVien.CurrentRow == null)
-            {
-                MessageBox.Show("Chọn một sinh viên để xóa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (dgvSinhVien.CurrentRow.DataBoundItem is Student student)
-            {
-                var confirm = MessageBox.Show($"Xóa sinh viên {student.HoTen}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (confirm == DialogResult.Yes)
-                {
-                    _students.Remove(student);
-                    ClearForm();
-                }
-            }
+            MessageBox.Show("Chức năng xóa đã tắt (chỉ xem và tìm kiếm).", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void DgvSinhVien_SelectionChanged(object sender, EventArgs e)
@@ -111,46 +79,19 @@ namespace baithuchanh2
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            string keyword = txtSearch.Text.Trim();
-            if (string.IsNullOrEmpty(keyword))
-            {
-                dgvSinhVien.ClearSelection();
-                return;
-            }
-
-            var match = _students.FirstOrDefault(s =>
-                s.MaSV.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                s.HoTen.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                s.Lop.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
-
-            if (match != null)
-            {
-                int index = _students.IndexOf(match);
-                if (index >= 0)
-                {
-                    dgvSinhVien.ClearSelection();
-                    dgvSinhVien.Rows[index].Selected = true;
-                    dgvSinhVien.FirstDisplayedScrollingRowIndex = index;
-                    LoadSelectedToForm();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Không tìm thấy sinh viên phù hợp.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            LoadData(txtSearch.Text.Trim());
         }
 
         private void LoadSelectedToForm()
         {
-            if (dgvSinhVien.CurrentRow?.DataBoundItem is Student student)
+            if (dgvSinhVien.CurrentRow?.DataBoundItem is DataRowView drv)
             {
-                txtMaSV.Text = student.MaSV;
-                txtHoTen.Text = student.HoTen;
-                dtNgaySinh.Value = student.NgaySinh == DateTime.MinValue ? DateTime.Today : student.NgaySinh;
-                cboGioiTinh.SelectedItem = student.GioiTinh;
-                if (cboGioiTinh.SelectedItem == null && cboGioiTinh.Items.Count > 0)
-                    cboGioiTinh.SelectedIndex = 0;
-                txtLop.Text = student.Lop;
+                txtMaSV.Text = drv["MaSV"]?.ToString();
+                txtHoTen.Text = drv["HoTen"]?.ToString();
+                txtLop.Text = drv["MaLop"]?.ToString();
+                cboGioiTinh.Text = drv["GioiTinh"]?.ToString();
+                if (DateTime.TryParse(drv["NgaySinh"]?.ToString(), out var dob))
+                    dtNgaySinh.Value = dob;
             }
         }
 
@@ -166,6 +107,11 @@ namespace baithuchanh2
                 message = "Họ tên không được để trống.";
                 return false;
             }
+            if (string.IsNullOrWhiteSpace(txtLop.Text))
+            {
+                message = "Mã lớp không được để trống.";
+                return false;
+            }
             message = string.Empty;
             return true;
         }
@@ -175,8 +121,8 @@ namespace baithuchanh2
             txtMaSV.Clear();
             txtHoTen.Clear();
             txtLop.Clear();
+            cboGioiTinh.SelectedIndex = cboGioiTinh.Items.Count > 0 ? 0 : -1;
             dtNgaySinh.Value = DateTime.Today;
-            if (cboGioiTinh.Items.Count > 0) cboGioiTinh.SelectedIndex = 0;
             txtMaSV.Focus();
         }
 
@@ -186,7 +132,12 @@ namespace baithuchanh2
             public string HoTen { get; set; }
             public DateTime NgaySinh { get; set; }
             public string GioiTinh { get; set; }
-            public string Lop { get; set; }
+            public string MaLop { get; set; }
+        }
+
+        private void dgvSinhVien_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

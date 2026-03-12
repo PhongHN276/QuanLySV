@@ -25,10 +25,6 @@ namespace baithuchanh2
         private TextBox txtSearch;
         private Button btnSearch;
         private DataGridView dgvLop;
-        private DataGridViewTextBoxColumn colMaLop;
-        private DataGridViewTextBoxColumn colTenLop;
-        private DataGridViewTextBoxColumn colKhoa;
-        private DataGridViewTextBoxColumn colSiSo;
 
         protected override void Dispose(bool disposing)
         {
@@ -43,6 +39,7 @@ namespace baithuchanh2
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.btnXoa = new System.Windows.Forms.Button();
             this.btnSua = new System.Windows.Forms.Button();
@@ -58,19 +55,25 @@ namespace baithuchanh2
             this.lblMaLop = new System.Windows.Forms.Label();
             this.lblTitleInfo = new System.Windows.Forms.Label();
             this.dgvLop = new System.Windows.Forms.DataGridView();
-            this.colMaLop = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTenLop = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colKhoa = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSiSo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.lblSearch = new System.Windows.Forms.Label();
+            this.qLSVDataSet = new baithuchanh2.QLSVDataSet();
+            this.lopBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.lopTableAdapter = new baithuchanh2.QLSVDataSetTableAdapters.LopTableAdapter();
+            this.tableAdapterManager = new baithuchanh2.QLSVDataSetTableAdapters.TableAdapterManager();
+            this.maLopDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tenLopDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.khoaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.siSoDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSiSo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.qLSVDataSet)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lopBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -178,7 +181,7 @@ namespace baithuchanh2
             this.lblSiSo.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.lblSiSo.Location = new System.Drawing.Point(22, 249);
             this.lblSiSo.Name = "lblSiSo";
-            this.lblSiSo.Size = new System.Drawing.Size(36, 17);
+            this.lblSiSo.Size = new System.Drawing.Size(45, 23);
             this.lblSiSo.TabIndex = 7;
             this.lblSiSo.Text = "Sĩ số";
             // 
@@ -195,7 +198,7 @@ namespace baithuchanh2
             this.lblKhoa.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.lblKhoa.Location = new System.Drawing.Point(22, 193);
             this.lblKhoa.Name = "lblKhoa";
-            this.lblKhoa.Size = new System.Drawing.Size(39, 17);
+            this.lblKhoa.Size = new System.Drawing.Size(49, 23);
             this.lblKhoa.TabIndex = 5;
             this.lblKhoa.Text = "Khoa";
             // 
@@ -212,7 +215,7 @@ namespace baithuchanh2
             this.lblTenLop.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.lblTenLop.Location = new System.Drawing.Point(22, 137);
             this.lblTenLop.Name = "lblTenLop";
-            this.lblTenLop.Size = new System.Drawing.Size(56, 17);
+            this.lblTenLop.Size = new System.Drawing.Size(65, 23);
             this.lblTenLop.TabIndex = 3;
             this.lblTenLop.Text = "Tên lớp";
             // 
@@ -229,7 +232,7 @@ namespace baithuchanh2
             this.lblMaLop.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.lblMaLop.Location = new System.Drawing.Point(22, 81);
             this.lblMaLop.Name = "lblMaLop";
-            this.lblMaLop.Size = new System.Drawing.Size(52, 17);
+            this.lblMaLop.Size = new System.Drawing.Size(63, 23);
             this.lblMaLop.TabIndex = 1;
             this.lblMaLop.Text = "Mã lớp";
             // 
@@ -239,7 +242,7 @@ namespace baithuchanh2
             this.lblTitleInfo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.lblTitleInfo.Location = new System.Drawing.Point(21, 24);
             this.lblTitleInfo.Name = "lblTitleInfo";
-            this.lblTitleInfo.Size = new System.Drawing.Size(173, 21);
+            this.lblTitleInfo.Size = new System.Drawing.Size(181, 28);
             this.lblTitleInfo.TabIndex = 0;
             this.lblTitleInfo.Text = "Thông tin lớp học";
             // 
@@ -250,50 +253,25 @@ namespace baithuchanh2
             this.dgvLop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvLop.AutoGenerateColumns = false;
             this.dgvLop.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvLop.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvLop.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colMaLop,
-            this.colTenLop,
-            this.colKhoa,
-            this.colSiSo});
-            this.dgvLop.Location = new System.Drawing.Point(20, 78);
+            this.maLopDataGridViewTextBoxColumn,
+            this.tenLopDataGridViewTextBoxColumn,
+            this.khoaDataGridViewTextBoxColumn,
+            this.siSoDataGridViewTextBoxColumn});
+            this.dgvLop.DataSource = this.lopBindingSource;
+            this.dgvLop.Location = new System.Drawing.Point(20, 63);
             this.dgvLop.MultiSelect = false;
             this.dgvLop.Name = "dgvLop";
             this.dgvLop.ReadOnly = true;
             this.dgvLop.RowHeadersVisible = false;
+            this.dgvLop.RowHeadersWidth = 51;
             this.dgvLop.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvLop.Size = new System.Drawing.Size(480, 430);
             this.dgvLop.TabIndex = 3;
             this.dgvLop.SelectionChanged += new System.EventHandler(this.DgvLop_SelectionChanged);
-            // 
-            // colMaLop
-            // 
-            this.colMaLop.DataPropertyName = "MaLop";
-            this.colMaLop.HeaderText = "Mã lớp";
-            this.colMaLop.Name = "colMaLop";
-            this.colMaLop.ReadOnly = true;
-            // 
-            // colTenLop
-            // 
-            this.colTenLop.DataPropertyName = "TenLop";
-            this.colTenLop.HeaderText = "Tên lớp";
-            this.colTenLop.Name = "colTenLop";
-            this.colTenLop.ReadOnly = true;
-            // 
-            // colKhoa
-            // 
-            this.colKhoa.DataPropertyName = "Khoa";
-            this.colKhoa.HeaderText = "Khoa";
-            this.colKhoa.Name = "colKhoa";
-            this.colKhoa.ReadOnly = true;
-            // 
-            // colSiSo
-            // 
-            this.colSiSo.DataPropertyName = "SiSo";
-            this.colSiSo.HeaderText = "Sĩ số";
-            this.colSiSo.Name = "colSiSo";
-            this.colSiSo.ReadOnly = true;
             // 
             // btnSearch
             // 
@@ -321,9 +299,62 @@ namespace baithuchanh2
             this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.lblSearch.Location = new System.Drawing.Point(17, 13);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(151, 17);
+            this.lblSearch.Size = new System.Drawing.Size(197, 23);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "Tìm kiếm (Mã/Tên/Khoa)";
+            // 
+            // qLSVDataSet
+            // 
+            this.qLSVDataSet.DataSetName = "QLSVDataSet";
+            this.qLSVDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // lopBindingSource
+            // 
+            this.lopBindingSource.DataMember = "Lop";
+            this.lopBindingSource.DataSource = this.qLSVDataSet;
+            // 
+            // lopTableAdapter
+            // 
+            this.lopTableAdapter.ClearBeforeFill = true;
+            // 
+            // tableAdapterManager
+            // 
+            this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
+            this.tableAdapterManager.LopTableAdapter = this.lopTableAdapter;
+            this.tableAdapterManager.SinhVienTableAdapter = null;
+            this.tableAdapterManager.UpdateOrder = baithuchanh2.QLSVDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
+            // 
+            // maLopDataGridViewTextBoxColumn
+            // 
+            this.maLopDataGridViewTextBoxColumn.DataPropertyName = "MaLop";
+            this.maLopDataGridViewTextBoxColumn.HeaderText = "MaLop";
+            this.maLopDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.maLopDataGridViewTextBoxColumn.Name = "maLopDataGridViewTextBoxColumn";
+            this.maLopDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // tenLopDataGridViewTextBoxColumn
+            // 
+            this.tenLopDataGridViewTextBoxColumn.DataPropertyName = "TenLop";
+            this.tenLopDataGridViewTextBoxColumn.HeaderText = "TenLop";
+            this.tenLopDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.tenLopDataGridViewTextBoxColumn.Name = "tenLopDataGridViewTextBoxColumn";
+            this.tenLopDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // khoaDataGridViewTextBoxColumn
+            // 
+            this.khoaDataGridViewTextBoxColumn.DataPropertyName = "Khoa";
+            this.khoaDataGridViewTextBoxColumn.HeaderText = "Khoa";
+            this.khoaDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.khoaDataGridViewTextBoxColumn.Name = "khoaDataGridViewTextBoxColumn";
+            this.khoaDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // siSoDataGridViewTextBoxColumn
+            // 
+            this.siSoDataGridViewTextBoxColumn.DataPropertyName = "SiSo";
+            this.siSoDataGridViewTextBoxColumn.HeaderText = "SiSo";
+            this.siSoDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.siSoDataGridViewTextBoxColumn.Name = "siSoDataGridViewTextBoxColumn";
+            this.siSoDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // frm_lop
             // 
@@ -344,10 +375,21 @@ namespace baithuchanh2
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numSiSo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.qLSVDataSet)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lopBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private QLSVDataSet qLSVDataSet;
+        private BindingSource lopBindingSource;
+        private QLSVDataSetTableAdapters.LopTableAdapter lopTableAdapter;
+        private QLSVDataSetTableAdapters.TableAdapterManager tableAdapterManager;
+        private DataGridViewTextBoxColumn maLopDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn tenLopDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn khoaDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn siSoDataGridViewTextBoxColumn;
     }
 }
