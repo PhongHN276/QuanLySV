@@ -46,6 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frm_lop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_lop.Designer.cs">
+      <DependentUpon>frm_lop.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frm_lop.resx">
+      <DependentUpon>frm_lop.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="frm_qlsv.cs">
       <SubType>Form</SubType>
     </Compile>
