@@ -20,19 +20,19 @@ namespace baithuchanh2
             InitializeComponent();
         }
 
-        private void txtUsername_TextChanged(object sender, EventArgs e)
+        private void TxtUsername_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void BtnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text;
 
             if (username == ValidUsername && password == ValidPassword)
             {
-                var main = new frm_main();
+                var main = new frm_qlsv();
                 // Khi form chính đóng, thoát luôn ứng dụng thay vì để form đăng nhập ẩn.
                 main.FormClosed += (s, args) => this.Close();
                 main.Show();
